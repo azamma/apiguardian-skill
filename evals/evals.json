@@ -1,0 +1,37 @@
+{
+  "skill_name": "apiguardian-skill",
+  "evals": [
+    {
+      "id": "audit-with-whitelists",
+      "prompt": "Audit the AWS API Gateway REST API named MyService-Public-PROD for our quarterly compliance review. Generate per-path documentation (methods, authorizers, integrations) plus a security CSV with the standard columns (api, method, path, is_authorized, authorization_type, authorizer_name, api_key, whitelist, endpoint_url). Apply any whitelist files in ./whitelists/. Drop everything under ./reports/audit-myservice-prod/.",
+      "expected_output": "Per-path Markdown tree under ./reports/audit-myservice-prod/MyService-Public-PROD/ plus a CSV with the 9 standard columns and one row per non-OPTIONS method.",
+      "files": [],
+      "assertions": [
+        {"text": "Output dir contains a per-API folder for MyService-Public-PROD"},
+        {"text": "An INDEX.md file exists at the API folder root"},
+        {"text": "A paths/ subfolder exists with at least 1 per-path Markdown file"},
+        {"text": "A CSV security report file exists somewhere under the output dir"},
+        {"text": "CSV header matches exactly: api,method,path,is_authorized,authorization_type,authorizer_name,api_key,whitelist,endpoint_url"},
+        {"text": "CSV excludes OPTIONS rows (no row has method=OPTIONS)"},
+        {"text": "All CSV rows have api column set to MyService-Public-PROD"},
+        {"text": "At least one per-path Markdown file mentions an integration URI containing ${stageVariables}"}
+      ]
+    },
+    {
+      "id": "docs-only",
+      "prompt": "Document the PROD environment of the AWS API Gateway REST API named MyOtherService-Public so a new teammate can browse the endpoints by path without opening the AWS console. Output the docs to ./reports/docs-myotherservice-prod/. No security CSV is needed.",
+      "expected_output": "Hierarchical Markdown tree under ./reports/docs-myotherservice-prod/MyOtherService-Public-PROD/ with INDEX.md plus paths/*.md. No CSV file expected.",
+      "files": [],
+      "assertions": [
+        {"text": "Output dir contains a per-API folder for MyOtherService-Public-PROD"},
+        {"text": "An INDEX.md file exists at the API folder root"},
+        {"text": "A paths/ subfolder exists with at least 1 per-path Markdown file"},
+        {"text": "INDEX.md links to per-path Markdown files (relative links to paths/*.md)"},
+        {"text": "At least one per-path MD includes an integration URI"},
+        {"text": "At least one per-path MD shows authorization information for at least one method"},
+        {"text": "No CSV file exists in the output (user explicitly said no CSV)"},
+        {"text": "Output is per-path (each resource has its own MD), not one giant file dumping everything"}
+      ]
+    }
+  ]
+}
